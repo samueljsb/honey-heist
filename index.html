@@ -21,10 +21,14 @@
 
         <div class="row my-3">
           <div class="d-grid gap-2 col-sm">
-            <button type="button" class="btn btn-danger" onclick="incrBear()">
+            <button
+              type="button"
+              class="btn btn-danger"
+              onclick="frustration()"
+            >
               Frustration
             </button>
-            <button type="button" class="btn btn-warning" onclick="incrBear()">
+            <button type="button" class="btn btn-warning" onclick="eatHoney()">
               Eat a load of honey
             </button>
           </div>
@@ -49,17 +53,13 @@
           </div>
 
           <div class="d-grid gap-2 col-sm">
-            <button
-              type="button"
-              class="btn btn-success"
-              onclick="incrCriminal()"
-            >
+            <button type="button" class="btn btn-success" onclick="greed()">
               Greed
             </button>
             <button
               type="button"
               class="btn btn-secondary"
-              onclick="incrCriminal()"
+              onclick="flashback()"
             >
               Flashback
             </button>
@@ -92,35 +92,62 @@
     </script>
 
     <script>
-      function incr(elem) {
-        let value = parseInt(elem.innerText);
+      // Persistence
 
-        if (value == 6) {
-          return;
-        }
-
-        elem.innerText = value + 1;
+      function getScores() {
+        return {
+          bear: parseInt(document.getElementById("bearScore").innerText),
+          criminal: parseInt(
+            document.getElementById("criminalScore").innerText,
+          ),
+        };
       }
 
-      function decr(elem) {
-        let value = parseInt(elem.innerText);
+      // Display
 
-        if (value == 0) {
-          return;
-        }
-
-        elem.innerText = value - 1;
+      function displayScores(scores) {
+        document.getElementById("bearScore").innerText = scores["bear"];
+        document.getElementById("criminalScore").innerText = scores["criminal"];
       }
 
-      function incrBear() {
-        incr(document.getElementById("bearScore"));
-        decr(document.getElementById("criminalScore"));
+      // Rules
+
+      function incr(score) {
+        return Math.min(6, score + 1);
       }
 
-      function incrCriminal() {
-        incr(document.getElementById("criminalScore"));
-        decr(document.getElementById("bearScore"));
+      function decr(score) {
+        return Math.max(0, score - 1);
       }
+
+      function moreBear(scores) {
+        return {
+          bear: incr(scores["bear"]),
+          criminal: decr(scores["criminal"]),
+        };
+      }
+
+      function moreCriminal(scores) {
+        return {
+          bear: decr(scores["bear"]),
+          criminal: incr(scores["criminal"]),
+        };
+      }
+
+      // Application
+
+      function updateScores(change) {
+        return function _() {
+          let scores = getScores();
+          let newScores = change(scores);
+          displayScores(newScores);
+        };
+      }
+
+      let frustration = updateScores(moreBear);
+      let eatHoney = updateScores(moreBear);
+      let greed = updateScores(moreCriminal);
+      let flashback = updateScores(moreCriminal);
     </script>
   </body>
 </html>
