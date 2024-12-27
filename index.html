@@ -95,12 +95,12 @@
       // Persistence
 
       function getScores() {
-        return {
-          bear: parseInt(document.getElementById("bearScore").innerText),
-          criminal: parseInt(
-            document.getElementById("criminalScore").innerText,
-          ),
-        };
+        let scores = JSON.parse(window.sessionStorage.getItem("scores"));
+        return scores || { bear: 3, criminal: 3 };
+      }
+
+      function saveScores(scores) {
+        window.sessionStorage.setItem("scores", JSON.stringify(scores));
       }
 
       // Display
@@ -140,6 +140,7 @@
         return function _() {
           let scores = getScores();
           let newScores = change(scores);
+          saveScores(newScores);
           displayScores(newScores);
         };
       }
@@ -148,6 +149,10 @@
       let eatHoney = updateScores(moreBear);
       let greed = updateScores(moreCriminal);
       let flashback = updateScores(moreCriminal);
+
+      // initialise the scores from session storage
+      // (this ensures saved scores are shown on refresh)
+      displayScores(getScores());
     </script>
   </body>
 </html>
